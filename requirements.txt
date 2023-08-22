@@ -2,3 +2,4 @@ Flask==2.2.2
 bardapi
 nltk
 newspaper3k
+flask-cors

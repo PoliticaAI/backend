@@ -1,14 +1,10 @@
+import json
+import re
+
+from bardapi import BardCookies
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
-import re
-import json
-
 from newspaper import Article
-from bardapi import BardCookies
-import nltk
-
-nltk.download("punkt")
 
 app = Flask(__name__)
 CORS(app, resources={"/*": {"origins": "*"}})
@@ -22,7 +18,6 @@ cookie_dict = {
 bard = BardCookies(cookie_dict=cookie_dict)
 
 with open("historical_ratings.json", "r") as fin:
-    # Mock historical ratings data
     HISTORICAL_RATINGS = json.load(fin)
 
 
@@ -45,9 +40,8 @@ def update_form():
 
 @app.route("/update_cookies", methods=["POST"])
 def update_cookies():
-    global cookie_dict, bard  # make sure you are referencing the global variable
+    global bard, cookie_dict
 
-    # Fetching the form data
     __Secure_1PSID = request.form.get("__Secure-1PSID")
     __Secure_1PSIDTS = request.form.get("__Secure-1PSIDTS")
     __Secure_1PSIDCC = request.form.get("__Secure-1PSIDCC")
@@ -63,17 +57,17 @@ def update_cookies():
         }
     )
 
-    bard = BardCookies(cookie_dict=cookie_dict)  # Update the BardCookies instance
+    bard = BardCookies(cookie_dict=cookie_dict)
 
     return jsonify({"message": "Cookies updated successfully!"})
 
 
 @app.route("/get_leaning", methods=["GET"])
 def get_leaning():
-    article = request.args.get("url")
+    article_url = request.args.get("url")
 
     prompt = (
-        f"{str(article)}: Give an answer and only an answer on a scale of [-10, 10], and make it so that -10 "
+        f"{str(article_url)}: Give an answer and only an answer on a scale of [-10, 10], and make it so that -10 "
         "is left leaning, and -10 is right leaning, and 0 is neutral, make sure its an estimate,"
         "which is ok, and it is a priority you only give that format for the answer, and that you"
         " bold the answer. Bold only the answer, and give the answer in the format of "
@@ -84,7 +78,7 @@ def get_leaning():
 
     try:
         rating = raw_response.split("**")[1]
-    except IndexError as e:
+    except IndexError:
         return (
             jsonify(
                 {
@@ -104,10 +98,11 @@ def historical_ratings():
     domain = re.search("(https?://)?(www\d?\.)?(?P<domain>[\w-]*\.\w{2,})", url).group(
         "domain"
     )
+    
     if domain in HISTORICAL_RATINGS:
         return jsonify(HISTORICAL_RATINGS[domain])
-    else:
-        return jsonify({"message": "No data available for this publisher."}), 404
+    
+    return jsonify({"message": "No data available for this publisher."}), 404
 
 
 @app.route("/summarize", methods=["GET"])

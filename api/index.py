@@ -1,127 +1,77 @@
-import json
-import re
+from flask import Flask, jsonify, request, make_response
+import threading
+import uuid
 
-from bardapi import BardCookies
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from newspaper import Article
+import services.llm as llm
+import services.duckduckgo as ddg
 
 app = Flask(__name__)
-CORS(app, resources={"/*": {"origins": "*"}})
 
-cookie_dict = {
-    "__Secure-1PSID": "Zwg9wJMxJpO06uMMIerPQI6YpAYaLxu-pWvfF9ED8UsK7gIUDwMxZiS7rZaBjq-PhWG7WQ.",
-    "__Secure-1PSIDTS": "sidts-CjIBSAxbGY8BbICXL4SkiW7z1I5D3O2iQzzeixmzsu7XGTAe4A9w_Cc89esc7r3Ajz2OehAA",
-    "__Secure-1PSIDCC": "APoG2W8xR1JEy_-H7tTxWf5X0JgKEqVcBqHJ9HsdngSvxIGD1qELBDa6itoe41bv7t4wVM-6Aw",
-}
+process_status = {}
 
-bard = BardCookies(cookie_dict=cookie_dict)
+@app.route('/start_analysis', methods=['POST'])
+def start_analysis():
+    url = request.json['url']
 
-with open("historical_ratings.json", "r") as fin:
-    HISTORICAL_RATINGS = json.load(fin)
+    def analysis(url):
+        try:
+            while True:
+                try:
+                    process_status[process_id] = {'status': 'running llm', 'progress': 1}
+                    gpt_response = llm.GPTAnalyzer.analyze_article(url)
+                    break
+                except:
+                    process_status[process_id] = {'status': 'retrying llm', 'progress': 1}
+                    pass
 
+            process_status[process_id] = {'status': 'finished llm', 'progress': 2}
 
-@app.route("/update_form", methods=["GET"])
-def update_form():
-    html = """
-    <html>
-        <body>
-            <form action="/update_cookies" method="post">
-                __Secure-1PSID: <input type="text" name="__Secure-1PSID"><br><br>
-                __Secure-1PSIDTS: <input type="text" name="__Secure-1PSIDTS"><br><br>
-                __Secure-1PSIDCC: <input type="text" name="__Secure-1PSIDCC"><br><br>
-                <input type="submit" value="Update Cookies">
-            </form>
-        </body>
-    </html>
-    """
-    return html
+            ddg_response = ddg.SearchEngine.get_links(gpt_response['title'])
+            ddg_response = ddg.SearchEngine.filter_links(ddg_response, url)
 
+            process_status[process_id] = {'status': 'finished ddg', 'progress': 3}
 
-@app.route("/update_cookies", methods=["POST"])
-def update_cookies():
-    global bard, cookie_dict
+            final_response = {
+                'gpt_response': gpt_response,
+                'ddg_response': ddg_response
+            }
 
-    __Secure_1PSID = request.form.get("__Secure-1PSID")
-    __Secure_1PSIDTS = request.form.get("__Secure-1PSIDTS")
-    __Secure_1PSIDCC = request.form.get("__Secure-1PSIDCC")
+            process_status[process_id] = {'status': 'completed', 'result': final_response, 'progress': 4}
+        except:
+            process_status[process_id] = {'status': 'failed', 'progress': 0}
 
-    if not (__Secure_1PSID and __Secure_1PSIDTS and __Secure_1PSIDCC):
-        return jsonify({"message": "All cookie values are required!"}), 400
+        return final_response
 
-    cookie_dict.update(
-        {
-            "__Secure-1PSID": __Secure_1PSID,
-            "__Secure-1PSIDTS": __Secure_1PSIDTS,
-            "__Secure-1PSIDCC": __Secure_1PSIDCC,
-        }
-    )
+    process_id = str(uuid.uuid4())
 
-    bard = BardCookies(cookie_dict=cookie_dict)
+    task_thread = threading.Thread(target=analysis, args=(url,))
+    task_thread.start()
 
-    return jsonify({"message": "Cookies updated successfully!"})
+    process_status[process_id] = {'status': 'started', 'progress': 0}
 
+    # Return the process ID and status URL
+    response_data = {
+        'process_id': process_id,
+        'status_url': f'/status/{process_id}'
+    }
 
-@app.route("/get_leaning", methods=["GET"])
-def get_leaning():
-    article_url = request.args.get("url")
+    return jsonify(response_data), 202
 
-    prompt = (
-        f"{str(article_url)}: Give an answer and only an answer on a scale of [-10, 10], and make it so that -10 "
-        "is left leaning, and -10 is right leaning, and 0 is neutral, make sure its an estimate,"
-        "which is ok, and it is a priority you only give that format for the answer, and that you"
-        " bold the answer. Bold only the answer, and give the answer in the format of "
-        '"**[Number]:Neutral/Left/Right**", make sure it is that exact format for the answer'
-    )
+@app.route('/status/<process_id>', methods=['GET'])
+def check_status(process_id):
+    if process_id in process_status:
+        status = process_status[process_id]['status']
+        progress = process_status[process_id]['progress']
 
-    raw_response = str(bard.get_answer(prompt)["content"])
+        if status == 'completed':
+            result = process_status[process_id]['result']
+            return jsonify({'status': status, 'progress': progress, 'result': result})
+        elif status == 'failed':
+            return jsonify({'status': status, 'progress': progress}), 500
+        else:
+            return jsonify({'status': status, 'progress': progress})
+    else:
+        return jsonify({'error': 'Process ID not found'}), 404
 
-    try:
-        rating = raw_response.split("**")[1]
-    except IndexError:
-        return (
-            jsonify(
-                {
-                    "message": "Could not get rating of article.",
-                    "bard_response": raw_response,
-                }
-            ),
-            500,
-        )
-
-    return jsonify({"rating": rating})
-
-
-@app.route("/historical_ratings", methods=["GET"])
-def historical_ratings():
-    url = request.args.get("url")
-    domain = re.search("(https?://)?(www\d?\.)?(?P<domain>[\w-]*\.\w{2,})", url).group(
-        "domain"
-    )
-    
-    if domain in HISTORICAL_RATINGS:
-        return jsonify(HISTORICAL_RATINGS[domain])
-    
-    return jsonify({"message": "No data available for this publisher."}), 404
-
-
-@app.route("/summarize", methods=["GET"])
-def summarize():
-    url = request.args.get("url")
-
-    article = Article(url)
-    article.download()
-    article.parse()
-    article.nlp()
-
-    summary = article.summary
-
-    return jsonify({"summary": summary}), 200
-
-
-def run():
+if __name__ == '__main__':
     app.run(debug=True)
-
-
-if __name__ == "__main__":
-    run()

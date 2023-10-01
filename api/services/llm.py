@@ -63,15 +63,18 @@ class GPTAnalyzer:
         reasons = GPTAnalyzer.__parse_text(response[1])
         fallacies = GPTAnalyzer.__parse_text(response[2])
 
+
         gpt_response = {
             'ranking': ranking,
             'reasons': reasons,
-            'fallacies': fallacies
+            'fallacies': fallacies,
+            'title': article.title,
+            'top_image': article.top_image
         }
 
         return gpt_response
 
-# Example usage
-url = 'https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking'
-result = GPTAnalyzer.analyze_article(url)
-print(result)
+if __name__ == "__main__":
+    url = 'https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking'
+    result = GPTAnalyzer.analyze_article(url)
+    print(result)

@@ -14,6 +14,8 @@ def start_analysis():
     url = request.json['url']
 
     def analysis(url):
+        final_response = None
+
         try:
             while True:
                 try:
@@ -37,7 +39,8 @@ def start_analysis():
             }
 
             process_status[process_id] = {'status': 'completed', 'result': final_response, 'progress': 4}
-        except:
+        except Exception as e:
+            print(e)
             process_status[process_id] = {'status': 'failed', 'progress': 0}
 
         return final_response

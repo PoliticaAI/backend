@@ -37,19 +37,26 @@ class SearchEngine:
 
     @staticmethod
     def filter_links(links, url):
+        updated_links = []
         for blob in links:
             if blob['href'] == url:
-                links.remove(blob)
+                continue  # Skip
+            elif "youtube" in blob["href"] or "foxnews" in blob["href"]:
+                # print(blob['href'])
+                continue  # Skip
+            else:
+                try:
+                    article = Article(blob["href"])
+                    article.download()
+                    article.parse()
+                    # Check if the article has a title
+                    if article.title:
+                        updated_links.append(blob)
+                except Exception as e:
+                    pass
+                    # print(f"Error processing link {blob['href']}: {str(e)}")
 
-            if "youtube" in blob["href"] or "foxnews" in blob["href"]:
-                links.remove(blob)
-
-            try:
-                Article(blob["href"]).download().parse().title
-            except AttributeError:
-                links.remove(blob)
-
-            return links
+        return updated_links
 
 
 if __name__ == "__main__":

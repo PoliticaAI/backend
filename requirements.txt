@@ -3,3 +3,5 @@ bardapi
 nltk
 newspaper3k
 flask-cors
+Werkzeug==2.2.2
+gpt4free

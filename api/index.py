@@ -24,24 +24,24 @@ def start_analysis():
             while True:
                 try:
                     process_status[process_id] = {
-                        "status": "running llm",
+                        "status": "Running LLM",
                         "progress": 1,
                     }
                     gpt_response = llm.GPTAnalyzer.analyze_article(url)
                     break
                 except:
                     process_status[process_id] = {
-                        "status": "retrying llm",
+                        "status": "Retrying LLM",
                         "progress": 1,
                     }
                     pass
 
-            process_status[process_id] = {"status": "finished llm", "progress": 2}
+            process_status[process_id] = {"status": "Running DuckDuckGo search", "progress": 2}
 
             ddg_response = ddg.SearchEngine.get_links(gpt_response["title"])
             ddg_response = ddg.SearchEngine.filter_links(ddg_response, url)
 
-            process_status[process_id] = {"status": "finished ddg", "progress": 3}
+            process_status[process_id] = {"status": "Preparing final response", "progress": 3}
 
             final_response = {
                 "gpt_response": gpt_response,
@@ -49,13 +49,13 @@ def start_analysis():
             }
 
             process_status[process_id] = {
-                "status": "completed",
+                "status": "Finished",
                 "result": final_response,
                 "progress": 4,
             }
         except Exception as e:
             print(e)
-            process_status[process_id] = {"status": "failed", "progress": 0}
+            process_status[process_id] = {"status": "Failed", "progress": 0}
 
         return final_response
 
@@ -64,7 +64,7 @@ def start_analysis():
     task_thread = threading.Thread(target=analysis, args=(url,))
     task_thread.start()
 
-    process_status[process_id] = {"status": "started", "progress": 0}
+    process_status[process_id] = {"status": "Starting up", "progress": 0}
 
     # Return the process ID and status URL
     response_data = {"process_id": process_id, "status_url": f"/status/{process_id}"}

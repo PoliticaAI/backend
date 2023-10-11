@@ -78,10 +78,10 @@ def check_status(process_id):
         status = process_status[process_id]["status"]
         progress = process_status[process_id]["progress"]
 
-        if status == "completed":
+        if status == "Finished":
             result = process_status[process_id]["result"]
             return jsonify({"status": status, "progress": progress, "result": result})
-        elif status == "failed":
+        elif status == "Failed":
             return jsonify({"status": status, "progress": progress}), 500
         else:
             return jsonify({"status": status, "progress": progress})

@@ -16,6 +16,7 @@ class SearchEngine:
 
         links_raw = html.find_all("a", {"class": "result__a"})
         thumb_raw = html.find_all("img", {"class": "result__icon__img"})
+        desc_raw = html.find_all("a", {"class": "result__snippet"})
 
         assert len(links_raw) == len(thumb_raw)
 
@@ -26,11 +27,13 @@ class SearchEngine:
             title = link.getText()
             href = parse_qs(parsed_href.query)["uddg"][0]
             thumb = thumb_raw[i].get("src")
+            desc = desc_raw[i].getText()
 
             data.append({
                 "title": title,
                 "href": href,
-                "thumb": thumb
+                "thumb": thumb,
+                "desc": desc
             })
 
         return data

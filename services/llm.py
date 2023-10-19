@@ -1,5 +1,9 @@
 import openai
 from newspaper import Article
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class GPTAnalyzer:
     @staticmethod
@@ -13,7 +17,7 @@ class GPTAnalyzer:
 
     @staticmethod
     def analyze_article(url):
-        openai.api_key = "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"
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         article = Article(url)
         article.download()
         article.parse()
@@ -69,7 +73,7 @@ class GPTAnalyzer:
         return gpt_response
 
 if __name__ == "__main__":
-    openai.api_key = "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"
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     
     url = 'https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking'
     result = GPTAnalyzer.analyze_article(url)

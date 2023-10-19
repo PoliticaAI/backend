@@ -54,7 +54,7 @@ class GPTAnalyzer:
         response = "Unable to fetch the response, Please try again."
 
         while response == "Unable to fetch the response, Please try again.":
-            response = you.Completion.create(prompt=prompt, chat=chat).text
+            response = H2o.Completion.create(prompt=prompt, chat=chat).text
             time.sleep(1)
 
         response = response.split("=====")

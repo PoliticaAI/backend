@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from newspaper import Article
 from urllib.parse import quote_plus, urlparse, parse_qs
+import json
 
 
 class SearchEngine:
@@ -41,23 +42,17 @@ class SearchEngine:
     @staticmethod
     def filter_links(links, url):
         updated_links = []
+
+        with open("articles_data.json", "r") as json_file:
+            news_sources = json.load(json_file)
+        
         for blob in links:
             if blob['href'] == url:
                 continue  # Skip
-            elif "youtube" in blob["href"] or "foxnews" in blob["href"]:
-                # print(blob['href'])
-                continue  # Skip
             else:
-                try:
-                    article = Article(blob["href"])
-                    article.download()
-                    article.parse()
-                    # Check if the article has a title
-                    if article.title:
+                for source in news_sources:
+                    if source["news_source_name"] in blob['href']:
                         updated_links.append(blob)
-                except Exception as e:
-                    pass
-                    # print(f"Error processing link {blob['href']}: {str(e)}")
 
         return updated_links
 

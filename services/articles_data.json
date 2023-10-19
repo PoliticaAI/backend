@@ -1,0 +1,548 @@
+[
+    {
+        "news_source_name": "al-jazeera",
+        "url": "www.aljazeera.com",
+        "reliability": 49.47,
+        "bias": -3.71
+    },
+    {
+        "news_source_name": "ap",
+        "url": "apnews.com",
+        "reliability": 51.98,
+        "bias": -1.06
+    },
+    {
+        "news_source_name": "axios",
+        "url": "www.axios.com",
+        "reliability": 47.36,
+        "bias": -5.74
+    },
+    {
+        "news_source_name": "bbc",
+        "url": "www.bbc.com",
+        "reliability": 46.56,
+        "bias": -3.03
+    },
+    {
+        "news_source_name": "bloomberg-news",
+        "url": "www.bloomberg.com",
+        "reliability": 47.63,
+        "bias": -0.85
+    },
+    {
+        "news_source_name": "buzzfeed",
+        "url": "www.buzzfeednews.com",
+        "reliability": 43.2,
+        "bias": -7.06
+    },
+    {
+        "news_source_name": "christian-science-monitor",
+        "url": "www.csmonitor.com",
+        "reliability": 44.47,
+        "bias": -0.21
+    },
+    {
+        "news_source_name": "cnncom",
+        "url": "www.cnn.com",
+        "reliability": 42.22,
+        "bias": -5.69
+    },
+    {
+        "news_source_name": "financial-times",
+        "url": "www.ft.com",
+        "reliability": 46.71,
+        "bias": 0.62
+    },
+    {
+        "news_source_name": "forbes",
+        "url": "www.forbes.com",
+        "reliability": 40.27,
+        "bias": 0.2
+    },
+    {
+        "news_source_name": "huffpost",
+        "url": "www.huffpost.com",
+        "reliability": 39.98,
+        "bias": -11.64
+    },
+    {
+        "news_source_name": "jacobin",
+        "url": "jacobinmag.com",
+        "reliability": 32.32,
+        "bias": -19.92
+    },
+    {
+        "news_source_name": "la-times",
+        "url": "www.latimes.com",
+        "reliability": 48.88,
+        "bias": -3.06
+    },
+    {
+        "news_source_name": "mother-jones",
+        "url": "www.motherjones.com",
+        "reliability": 37.31,
+        "bias": -13.92
+    },
+    {
+        "news_source_name": "nbc",
+        "url": "www.nbcnews.com",
+        "reliability": 46.39,
+        "bias": -6.11
+    },
+    {
+        "news_source_name": "new-republic",
+        "url": "newrepublic.com",
+        "reliability": 36.43,
+        "bias": -12.82
+    },
+    {
+        "news_source_name": "new-york-daily-news",
+        "url": "www.nydailynews.com",
+        "reliability": 46.01,
+        "bias": -3.69
+    },
+    {
+        "news_source_name": "new-york-times",
+        "url": "www.nytimes.com",
+        "reliability": 47.5,
+        "bias": -4.01
+    },
+    {
+        "news_source_name": "newsweek",
+        "url": "www.newsweek.com",
+        "reliability": 42.1,
+        "bias": -8.0
+    },
+    {
+        "news_source_name": "npr",
+        "url": "www.npr.org",
+        "reliability": 49.9,
+        "bias": -2.73
+    },
+    {
+        "news_source_name": "politico",
+        "url": "www.politico.com",
+        "reliability": 46.11,
+        "bias": -5.24
+    },
+    {
+        "news_source_name": "propublica",
+        "url": "www.propublica.org",
+        "reliability": 47.78,
+        "bias": -5.93
+    },
+    {
+        "news_source_name": "quartz",
+        "url": "qz.com",
+        "reliability": 41.34,
+        "bias": -3.89
+    },
+    {
+        "news_source_name": "reason",
+        "url": "reason.com",
+        "reliability": 38.27,
+        "bias": 4.12
+    },
+    {
+        "news_source_name": "reuters",
+        "url": "www.reuters.com",
+        "reliability": 51.64,
+        "bias": -0.95
+    },
+    {
+        "news_source_name": "the-atlantic",
+        "url": "www.theatlantic.com",
+        "reliability": 40.16,
+        "bias": -6.41
+    },
+    {
+        "news_source_name": "the-economist",
+        "url": "www.economist.com",
+        "reliability": 42.34,
+        "bias": -2.43
+    },
+    {
+        "news_source_name": "the-guardian",
+        "url": "www.theguardian.com",
+        "reliability": 47.66,
+        "bias": -6.45
+    },
+    {
+        "news_source_name": "hill",
+        "url": "thehill.com",
+        "reliability": 46.23,
+        "bias": 0.09
+    },
+    {
+        "news_source_name": "independent",
+        "url": "www.independent.co.uk",
+        "reliability": 43.2,
+        "bias": -4.6
+    },
+    {
+        "news_source_name": "intercept",
+        "url": "theintercept.com",
+        "reliability": 37.76,
+        "bias": -15.52
+    },
+    {
+        "news_source_name": "nation",
+        "url": "www.thenation.com",
+        "reliability": 33.39,
+        "bias": -16.89
+    },
+    {
+        "news_source_name": "new-yorker",
+        "url": "www.newyorker.com",
+        "reliability": 41.85,
+        "bias": -6.9
+    },
+    {
+        "news_source_name": "time",
+        "url": "time.com",
+        "reliability": 42.7,
+        "bias": -4.35
+    },
+    {
+        "news_source_name": "usa-today",
+        "url": "www.usatoday.com",
+        "reliability": 46.07,
+        "bias": -2.03
+    },
+    {
+        "news_source_name": "vanity-fair",
+        "url": "www.vanityfair.com",
+        "reliability": 35.42,
+        "bias": -17.98
+    },
+    {
+        "news_source_name": "voice-america",
+        "url": "www.voanews.com",
+        "reliability": 47.31,
+        "bias": -5.78
+    },
+    {
+        "news_source_name": "vox",
+        "url": "www.vox.com",
+        "reliability": 41.97,
+        "bias": -8.75
+    },
+    {
+        "news_source_name": "wall-street-journal",
+        "url": "www.wsj.com",
+        "reliability": 48.33,
+        "bias": 1.89
+    },
+    {
+        "news_source_name": "washington-post",
+        "url": "www.washingtonpost.com",
+        "reliability": 43.73,
+        "bias": -4.18
+    },
+    {
+        "news_source_name": "ap",
+        "url": "ew.com",
+        "reliability": 51.98,
+        "bias": -1.06
+    },
+    {
+        "news_source_name": "buzzfeed",
+        "url": "ew.com",
+        "reliability": 43.2,
+        "bias": -7.06
+    },
+    {
+        "news_source_name": "cbs",
+        "url": "ew.com",
+        "reliability": 47.06,
+        "bias": -1.85
+    },
+    {
+        "news_source_name": "conservative-review",
+        "url": "ew.com",
+        "reliability": 21.8,
+        "bias": 25.3
+    },
+    {
+        "news_source_name": "fox-news-com",
+        "url": "ew.com",
+        "reliability": 26.75,
+        "bias": 15.31
+    },
+    {
+        "news_source_name": "life-news",
+        "url": "ew.com",
+        "reliability": 24.49,
+        "bias": 24.75
+    },
+    {
+        "news_source_name": "national-review",
+        "url": "ew.com",
+        "reliability": 26.36,
+        "bias": 16.23
+    },
+    {
+        "news_source_name": "nbc",
+        "url": "ew.com",
+        "reliability": 46.39,
+        "bias": -6.11
+    },
+    {
+        "news_source_name": "new-republic",
+        "url": "ew.com",
+        "reliability": 36.43,
+        "bias": -12.82
+    },
+    {
+        "news_source_name": "new-york-daily-news",
+        "url": "ew.com",
+        "reliability": 46.01,
+        "bias": -3.69
+    },
+    {
+        "news_source_name": "news-guts",
+        "url": "ew.com",
+        "reliability": 34.98,
+        "bias": -9.84
+    },
+    {
+        "news_source_name": "newsmax",
+        "url": "ew.com",
+        "reliability": 18.78,
+        "bias": 23.51
+    },
+    {
+        "news_source_name": "newspunch",
+        "url": "ew.com",
+        "reliability": 14.39,
+        "bias": 28.58
+    },
+    {
+        "news_source_name": "newsweek",
+        "url": "ew.com",
+        "reliability": 42.1,
+        "bias": -8.0
+    },
+    {
+        "news_source_name": "newsy",
+        "url": "ew.com",
+        "reliability": 48.81,
+        "bias": -3.03
+    },
+    {
+        "news_source_name": "real-news-network",
+        "url": "ew.com",
+        "reliability": 40.03,
+        "bias": -18.47
+    },
+    {
+        "news_source_name": "gateway-pundit",
+        "url": "ew.com",
+        "reliability": 12.44,
+        "bias": 28.55
+    },
+    {
+        "news_source_name": "new-yorker",
+        "url": "ew.com",
+        "reliability": 41.85,
+        "bias": -6.9
+    },
+    {
+        "news_source_name": "week",
+        "url": "ew.com",
+        "reliability": 30.98,
+        "bias": -8.31
+    },
+    {
+        "news_source_name": "vice",
+        "url": "ew.com",
+        "reliability": 38.58,
+        "bias": -10.72
+    },
+    {
+        "news_source_name": "voice-america",
+        "url": "ew.com",
+        "reliability": 47.31,
+        "bias": -5.78
+    },
+    {
+        "news_source_name": "ap",
+        "url": "news.yahoo.com",
+        "reliability": 51.98,
+        "bias": -1.06
+    },
+    {
+        "news_source_name": "buzzfeed",
+        "url": "news.yahoo.com",
+        "reliability": 43.2,
+        "bias": -7.06
+    },
+    {
+        "news_source_name": "cbs",
+        "url": "news.yahoo.com",
+        "reliability": 47.06,
+        "bias": -1.85
+    },
+    {
+        "news_source_name": "fox-news-com",
+        "url": "news.yahoo.com",
+        "reliability": 26.75,
+        "bias": 15.31
+    },
+    {
+        "news_source_name": "life-news",
+        "url": "news.yahoo.com",
+        "reliability": 24.49,
+        "bias": 24.75
+    },
+    {
+        "news_source_name": "nbc",
+        "url": "news.yahoo.com",
+        "reliability": 46.39,
+        "bias": -6.11
+    },
+    {
+        "news_source_name": "new-york-daily-news",
+        "url": "news.yahoo.com",
+        "reliability": 46.01,
+        "bias": -3.69
+    },
+    {
+        "news_source_name": "news-guts",
+        "url": "news.yahoo.com",
+        "reliability": 34.98,
+        "bias": -9.84
+    },
+    {
+        "news_source_name": "newsmax",
+        "url": "news.yahoo.com",
+        "reliability": 18.78,
+        "bias": 23.51
+    },
+    {
+        "news_source_name": "newspunch",
+        "url": "news.yahoo.com",
+        "reliability": 14.39,
+        "bias": 28.58
+    },
+    {
+        "news_source_name": "newsweek",
+        "url": "news.yahoo.com",
+        "reliability": 42.1,
+        "bias": -8.0
+    },
+    {
+        "news_source_name": "newsy",
+        "url": "news.yahoo.com",
+        "reliability": 48.81,
+        "bias": -3.03
+    },
+    {
+        "news_source_name": "real-news-network",
+        "url": "news.yahoo.com",
+        "reliability": 40.03,
+        "bias": -18.47
+    },
+    {
+        "news_source_name": "vice",
+        "url": "news.yahoo.com",
+        "reliability": 38.58,
+        "bias": -10.72
+    },
+    {
+        "news_source_name": "voice-america",
+        "url": "news.yahoo.com",
+        "reliability": 47.31,
+        "bias": -5.78
+    },
+    {
+        "news_source_name": "ap",
+        "url": "news.sky.com",
+        "reliability": 51.98,
+        "bias": -1.06
+    },
+    {
+        "news_source_name": "buzzfeed",
+        "url": "news.sky.com",
+        "reliability": 43.2,
+        "bias": -7.06
+    },
+    {
+        "news_source_name": "cbs",
+        "url": "news.sky.com",
+        "reliability": 47.06,
+        "bias": -1.85
+    },
+    {
+        "news_source_name": "fox-news-com",
+        "url": "news.sky.com",
+        "reliability": 26.75,
+        "bias": 15.31
+    },
+    {
+        "news_source_name": "life-news",
+        "url": "news.sky.com",
+        "reliability": 24.49,
+        "bias": 24.75
+    },
+    {
+        "news_source_name": "nbc",
+        "url": "news.sky.com",
+        "reliability": 46.39,
+        "bias": -6.11
+    },
+    {
+        "news_source_name": "new-york-daily-news",
+        "url": "news.sky.com",
+        "reliability": 46.01,
+        "bias": -3.69
+    },
+    {
+        "news_source_name": "news-guts",
+        "url": "news.sky.com",
+        "reliability": 34.98,
+        "bias": -9.84
+    },
+    {
+        "news_source_name": "newsmax",
+        "url": "news.sky.com",
+        "reliability": 18.78,
+        "bias": 23.51
+    },
+    {
+        "news_source_name": "newspunch",
+        "url": "news.sky.com",
+        "reliability": 14.39,
+        "bias": 28.58
+    },
+    {
+        "news_source_name": "newsweek",
+        "url": "news.sky.com",
+        "reliability": 42.1,
+        "bias": -8.0
+    },
+    {
+        "news_source_name": "newsy",
+        "url": "news.sky.com",
+        "reliability": 48.81,
+        "bias": -3.03
+    },
+    {
+        "news_source_name": "real-news-network",
+        "url": "news.sky.com",
+        "reliability": 40.03,
+        "bias": -18.47
+    },
+    {
+        "news_source_name": "vice",
+        "url": "news.sky.com",
+        "reliability": 38.58,
+        "bias": -10.72
+    },
+    {
+        "news_source_name": "voice-america",
+        "url": "news.sky.com",
+        "reliability": 47.31,
+        "bias": -5.78
+    }
+]

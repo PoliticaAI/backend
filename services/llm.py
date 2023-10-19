@@ -1,6 +1,5 @@
-from gpt4free import you
+import openai
 from newspaper import Article
-import time
 
 class GPTAnalyzer:
     @staticmethod
@@ -17,8 +16,6 @@ class GPTAnalyzer:
         article = Article(url)
         article.download()
         article.parse()
-
-        chat = []
 
         prompt = f"""
         Give an answer and only an answer on a scale of [-10, 10], and make it so that -10
@@ -46,23 +43,19 @@ class GPTAnalyzer:
         "
 
         Make sure everything is in its format. Do NOT add any extra text to attempt to label the information.
-        Do NOT include a for any section of the prompt.
+        Do NOT include a title for any section of the prompt.
 
         Article: {article.text}
         """
 
-        response = "Unable to fetch the response, Please try again."
+        response = openai.Completion.create(engine="text-davinci-002", prompt=prompt, max_tokens=1000)
+        text_response = response.choices[0].text.strip()
+        
+        parsed_response = text_response.split("=====")
 
-        while response == "Unable to fetch the response, Please try again.":
-            response = H2o.Completion.create(prompt=prompt, chat=chat).text
-            time.sleep(1)
-
-        response = response.split("=====")
-
-        ranking = [i.strip("**").strip() for i in response[0].strip().split(':')]
-        reasons = GPTAnalyzer.__parse_text(response[1])
-        fallacies = GPTAnalyzer.__parse_text(response[2])
-
+        ranking = [i.strip("**").strip() for i in parsed_response[0].strip().split(':')]
+        reasons = GPTAnalyzer.__parse_text(parsed_response[1])
+        fallacies = GPTAnalyzer.__parse_text(parsed_response[2])
 
         gpt_response = {
             'ranking': ranking,
@@ -75,6 +68,8 @@ class GPTAnalyzer:
         return gpt_response
 
 if __name__ == "__main__":
+    openai.api_key = "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"
+    
     url = 'https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking'
     result = GPTAnalyzer.analyze_article(url)
     print(result)

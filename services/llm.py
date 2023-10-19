@@ -13,6 +13,7 @@ class GPTAnalyzer:
 
     @staticmethod
     def analyze_article(url):
+        openai.api_key = "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"
         article = Article(url)
         article.download()
         article.parse()

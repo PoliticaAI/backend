@@ -49,7 +49,7 @@ class GPTAnalyzer:
         Article: {article.text}
         """
 
-        response = openai.Completion.create(engine="text-davinci-002", prompt=prompt, max_tokens=1000)
+        response = openai.Completion.create(engine="gpt-3.5-turbo", prompt=prompt, max_tokens=1000)
         text_response = response.choices[0].text.strip()
         
         parsed_response = text_response.split("=====")

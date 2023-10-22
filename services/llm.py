@@ -5,76 +5,87 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Load OpenAI API Key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 class GPTAnalyzer:
-    @staticmethod
-    def __parse_text(text):
-        parsed_text = []
-        for i in text.strip().split('\n\n'): 
-            for j in i.split('\n'):
-                parsed_text.append(j.strip().strip("**"))
-        parsed_text = dict([(parsed_text[i], parsed_text[i+1]) for i in range(0, len(parsed_text), 2)])
-        return parsed_text
+    SCHEMA = {
+        "type": "object",
+        "properties": {
+            "ranking": {
+                "type": "string",
+                "description": "Article ranking in terms of bias",
+                "enum": ["-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            },
+            "reasons": {
+                "type": "array",
+                "description": "Reasons for the given ranking",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Short summary or title of the reason"
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "Detailed explanation or description of the reason"
+                        }
+                    },
+                    "required": ["reason", "explanation"]
+                }
+            },
+            "fallacies": {
+                "type": "array",
+                "description": "List of fallacies or biases in the article",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "bias": {
+                            "type": "string",
+                            "description": "Name of the fallacy or bias"
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "Description or explanation of the fallacy or bias"
+                        }
+                    },
+                    "required": ["bias", "explanation"]
+                }
+            },
+            "summary": {
+                "type": "string",
+                "description": "Brief summary of the article"
+            }
+        },
+        "required": ["ranking", "reasons", "fallacies", "summary"]
+    }
+
 
     @staticmethod
     def analyze_article(url):
-        openai.api_key = os.getenv("OPENAI_API_KEY")
         article = Article(url)
         article.download()
         article.parse()
-
-        prompt = f"""
-        Give an answer and only an answer on a scale of [-10, 10], and make it so that -10
-        is left-leaning, and 10 is right-leaning, and 0 is neutral. Make sure it's an estimate,
-        which is ok, and it is a priority to only give that format for the answer, and that you 
-        bold the answer. Focus less on the direct content of the article and more so on how it is being presented by the news source.
-        Think about your thought process, but do not output it in any way or form.
-        Bold only the answer, and give the answer in the format of 
-        "**[Number]:Neutral/Left/Right**", make sure it is that exact format for the answer.
-
-        After you give the ranking, include a line of 5 equal signs ("=====") here.
-
-        After the line of equal signs, give 3 reasons as to WHY you gave that ranking in the format:
-        "**[Very short summary of Reason 1]: [Longer explanation of reason 1]**
-        **[Very short summary of Reason 2]: [Longer explanation of reason 2]**
-        **[Very short summary of Reason 3]: [Longer explanation of reason 3]**
-
-        Include a line of 5 equal signs ("=====") here.
-
-        Do NOT include a title for this section.
-        After the line of equal signs, make a list of 3 that you think are present in the article, using the following format:
-        "**[Fallacy/bias 1 name]: [Longer explanation of fallacy/bias 1]**
-        **[Fallacy/bias 2 name]: [Longer explanation of fallacy/bias 2]**
-        **[Fallacy/bias 3 name]: [Longer explanation of fallacy/bias 3]**
-        "
-
-        Make sure everything is in its format. Do NOT add any extra text to attempt to label the information.
-        Do NOT include a title for any section of the prompt.
-
-        Article: {article.text}
-        """
-
-        response = openai.Completion.create(engine="gpt-3.5-turbo-instruct", prompt=prompt, max_tokens=1000)
-        text_response = response.choices[0].text.strip()
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         
-        parsed_response = text_response.split("=====")
+        # Call the OpenAI API
+        completion = openai.ChatCompletion.create(
+            model="gpt-4-0613",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": f"Analyze this article for bias: {article.text}"}
+            ],
+            functions=[{"name": "analyze", "parameters": GPTAnalyzer.SCHEMA}],
+            function_call={"name": "analyze"},
+            temperature=0,
+        )
 
-        ranking = [i.strip("**").strip() for i in parsed_response[0].strip().split(':')]
-        reasons = GPTAnalyzer.__parse_text(parsed_response[1])
-        fallacies = GPTAnalyzer.__parse_text(parsed_response[2])
-
-        gpt_response = {
-            'ranking': ranking,
-            'reasons': reasons,
-            'fallacies': fallacies,
-            'title': article.title,
-            'top_image': article.top_image
-        }
-
-        return gpt_response
+        # Extract analysis from the response
+        analysis = completion.choices[0].message.function_call.arguments
+        return analysis, article.title
 
 if __name__ == "__main__":
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    
     url = 'https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking'
     result = GPTAnalyzer.analyze_article(url)
     print(result)

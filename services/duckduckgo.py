@@ -4,15 +4,19 @@ from urllib.parse import quote_plus, urlparse, parse_qs
 
 import services.historical as historical
 
+
 class SearchEngine:
     @staticmethod
     def get_links(query):
         url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
 
-        content = requests.get(url, headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        }).text
-        html = BeautifulSoup(content, 'html.parser')
+        content = requests.get(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+            },
+        ).text
+        html = BeautifulSoup(content, "html.parser")
 
         links_raw = html.find_all("a", {"class": "result__a"})
         thumb_raw = html.find_all("img", {"class": "result__icon__img"})
@@ -29,26 +33,21 @@ class SearchEngine:
             thumb = thumb_raw[i].get("src")
             desc = desc_raw[i].getText()
 
-            data.append({
-                "title": title,
-                "href": href,
-                "thumb": thumb,
-                "desc": desc
-            })
+            data.append({"title": title, "href": href, "thumb": thumb, "desc": desc})
 
         return data
 
     @staticmethod
     def filter_links(links, url):
         updated_links = []
-        
-        for blob in links:
-            if blob['href'] == url:
+
+        for article in links:
+            if article["href"] == url:
                 continue  # Skip
-            
+
             for source in historical.HistoricalAnalyzer.DATA:
-                if source["news_source_name"] in blob['href']:
-                    updated_links.append(blob)
+                if source["url"] in article["href"]:
+                    updated_links.append(article)
 
         return updated_links
 

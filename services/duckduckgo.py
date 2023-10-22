@@ -1,9 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-from newspaper import Article
 from urllib.parse import quote_plus, urlparse, parse_qs
-import json
 
+import services.historical as historical
 
 class SearchEngine:
     @staticmethod
@@ -42,17 +41,14 @@ class SearchEngine:
     @staticmethod
     def filter_links(links, url):
         updated_links = []
-
-        with open("articles_data.json", "r") as json_file:
-            news_sources = json.load(json_file)
         
         for blob in links:
             if blob['href'] == url:
                 continue  # Skip
-            else:
-                for source in news_sources:
-                    if source["news_source_name"] in blob['href']:
-                        updated_links.append(blob)
+            
+            for source in historical.HistoricalAnalyzer.DATA:
+                if source["news_source_name"] in blob['href']:
+                    updated_links.append(blob)
 
         return updated_links
 

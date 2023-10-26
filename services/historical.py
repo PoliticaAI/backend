@@ -9,8 +9,6 @@ class HistoricalAnalyzer:
         with open(os.path.join(curr_dir, "articles_data.json"), "r") as data:
             return json.load(data)
 
-    DATA = _read_data()
-
     @staticmethod
     def get_historical_data(url):
         for article in HistoricalAnalyzer.DATA:
@@ -18,3 +16,5 @@ class HistoricalAnalyzer:
                 return {"reliability": article["reliability"], "bias": article["bias"]}
         
         return None
+
+HistoricalAnalyzer.DATA = HistoricalAnalyzer._read_data()

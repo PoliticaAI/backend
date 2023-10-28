@@ -1,5 +1,4 @@
-"""This file is a temporary file for testing purposes. It will be deleted in the future production code of the application."""
-import llm
+npmimport llm
 import duckduckgo as ddg
 import json
 from newspaper import Article

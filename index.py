@@ -4,8 +4,12 @@ import uuid
 
 import services.llm as llm
 import services.duckduckgo as ddg
+import services.historical as historical
 
 from flask_cors import CORS
+
+from newspaper import Article
+
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -13,55 +17,78 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 process_status = {}
 
 
+def analysis(url, process_id):
+    try:
+        # Phase 1 - article extraction
+        process_status[process_id] = {
+            "status": "Downloading and extracting article",
+            "progress": 1
+        }
+
+        article = Article(url)
+        article.download()
+        article.parse()
+        
+        final_response = {
+            "title": article.title,
+        }
+
+        # Phase 2 - GPT analysis
+        while True:
+            try:
+                process_status[process_id] = {
+                    "status": "Running LLM",
+                    "progress": 2,
+                }
+
+                final_response["gpt_response"] = llm.GPTAnalyzer.analyze_article(article.text)
+
+                break
+            except:
+                process_status[process_id] = {
+                    "status": "Retrying LLM",
+                    "progress": 2,
+                }
+                pass
+
+        # Phase 3 - DuckDuckGo search
+        process_status[process_id] = {
+            "status": "Running similar article search",
+            "progress": 3,
+        }
+
+        final_response["ddg_response"] = ddg.SearchEngine.get_links(article.title)
+        final_response["ddg_response"] = ddg.SearchEngine.filter_links(final_response["ddg_response"], url)
+
+        # Phase 4 - Historical rating extraction
+        process_status[process_id] = {
+            "status": "Grabbing historical information",
+            "progress": 4,
+        }
+
+        final_response["historical"] = historical.HistoricalAnalyzer.get_historical_data(url)
+
+        # Finished!
+        process_status[process_id] = {
+            "status": "Finished",
+            "result": final_response,
+            "progress": 5,
+        }
+    except Exception as e:
+        print(e)
+        process_status[process_id] = {"status": "Failed", "progress": -1}
+
+    return final_response
+
+
 @app.route("/start_analysis", methods=["POST"])
 def start_analysis():
+    print(request.json)
     url = request.json["url"]
-
-    def analysis(url):
-        final_response = None
-
-        try:
-            while True:
-                try:
-                    process_status[process_id] = {
-                        "status": "Running LLM",
-                        "progress": 1,
-                    }
-                    gpt_response = llm.GPTAnalyzer.analyze_article(url)
-                    break
-                except:
-                    process_status[process_id] = {
-                        "status": "Retrying LLM",
-                        "progress": 1,
-                    }
-                    pass
-
-            process_status[process_id] = {"status": "Running DuckDuckGo search", "progress": 2}
-
-            ddg_response = ddg.SearchEngine.get_links(gpt_response["title"])
-            ddg_response = ddg.SearchEngine.filter_links(ddg_response, url)
-
-            process_status[process_id] = {"status": "Preparing final response", "progress": 3}
-
-            final_response = {
-                "gpt_response": gpt_response,
-                "ddg_response": ddg_response,
-            }
-
-            process_status[process_id] = {
-                "status": "Finished",
-                "result": final_response,
-                "progress": 4,
-            }
-        except Exception as e:
-            print(e)
-            process_status[process_id] = {"status": "Failed", "progress": 0}
-
-        return final_response
 
     process_id = str(uuid.uuid4())
 
-    task_thread = threading.Thread(target=analysis, args=(url,))
+    task_thread = threading.Thread(target=analysis, args=(url, process_id))
     task_thread.start()
 
     process_status[process_id] = {"status": "Starting up", "progress": 0}

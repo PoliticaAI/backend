@@ -1,0 +1,3 @@
+dispatch:
+  - url: "api.politica-ai.tech/*"
+    service: api

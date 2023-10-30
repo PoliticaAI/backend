@@ -1,6 +1,6 @@
 import openai
 from newspaper import Article
-import os
+import os, json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -88,7 +88,7 @@ class GPTAnalyzer:
     def analyze_article(text):
         # Based on URL https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking
         # Hardcoded - see original function below
-        return {
+        return json.dumps({
             "rating": "7",
             "reasons": [
                 {
@@ -111,7 +111,7 @@ class GPTAnalyzer:
                 },
             ],
             "summary": "The article discusses the extension of funding for the PEPFAR program by House Republicans, with provisions to prevent funding groups that allegedly promote abortions. The article heavily quotes Republican representatives and conservative groups, accusing the Biden administration of using the program to promote abortions. The article does not present any counterpoints or perspectives from Democrats or pro-choice groups.",
-        }
+        })
 
     # TODO: to save money, this method has been hardcoded for now - in final stages, need to uncomment
     # @staticmethod

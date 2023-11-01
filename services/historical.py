@@ -14,7 +14,6 @@ class HistoricalAnalyzer:
         for article in HistoricalAnalyzer.DATA:
             if article["url"] in url:
                 return {"reliability": article["reliability"], "bias": article["bias"]}
-        
-        return None
+        return {"reliability": "???", "bias": "???"}
 
 HistoricalAnalyzer.DATA = HistoricalAnalyzer._read_data()

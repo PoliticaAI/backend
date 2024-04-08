@@ -41,7 +41,7 @@ def analysis(url, process_id):
                     "progress": 2,
                 }
 
-                final_response["gpt_response"] = llm.GPTAnalyzer.analyze_article(article.text)
+                final_response["gpt_response"] = llm.ClaudeAnalyzer.analyze_article(article.text)
 
                 break
             except:

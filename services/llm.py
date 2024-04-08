@@ -1,4 +1,6 @@
 import openai
+from anthropic import Anthropic
+import google.generativeai as gemini
 from newspaper import Article
 import os, json
 from dotenv import load_dotenv
@@ -8,6 +10,8 @@ load_dotenv()
 # Load OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Load Gemini API Key
+gemini.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 class GPTAnalyzer:
     SCHEMA = {
@@ -134,6 +138,212 @@ class GPTAnalyzer:
         analysis = json.loads(completion.choices[0].message.function_call.arguments)
         return analysis
 
+class GeminiAnalyzer:
+    SCHEMA = {
+        "type": "object",
+        "properties": {
+            "rating": {
+                "type": "string",
+                "description": "Bias rating, where -10 is leaning left and 10 is leaning right.",
+                "enum": [
+                    "-10",
+                    "-9",
+                    "-8",
+                    "-7",
+                    "-6",
+                    "-5",
+                    "-4",
+                    "-3",
+                    "-2",
+                    "-1",
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                ],
+            },
+            "reasons": {
+                "type": "array",
+                "description": "Reasons for the given ranking",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Short summary or title of the reason",
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "Detailed explanation or description of the reason",
+                        },
+                    },
+                    "required": ["reason", "explanation"],
+                },
+            },
+            "fallacies": {
+                "type": "array",
+                "description": "List of fallacies or biases in the article",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "bias": {
+                            "type": "string",
+                            "description": "Name of the fallacy or bias",
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "Description or explanation of the fallacy or bias",
+                        },
+                    },
+                    "required": ["bias", "explanation"],
+                },
+            },
+            "summary": {
+                "type": "string",
+                "description": "Brief summary of the article",
+            },
+        },
+        "required": ["ranking", "reasons", "fallacies", "summary"],
+    }
+
+    @staticmethod
+    def analyze_article(text):
+        model = gemini.GenerativeModel("gemini-pro")
+
+        # Call the Gemini API
+        response = model.generate_content("""
+Please generate a long summary and analysis of the text below:
+%s
+                                          
+Use the schema provided below and make sure to respond in correct JSON syntax. Give longer, more detailed responses that give insights into the text. Keep the summary at 4-6 sentences in one paragraph and make each topic/subject mentioned in the schema 1-2 sentences in description. Also, do not leave any fields empty - try to find at least 2 instances of each subject specified in the schema.
+%s""" % (text, json.dumps(GeminiAnalyzer.SCHEMA)), generation_config=gemini.types.GenerationConfig(temperature=0.3))
+        
+        # Extract analysis from the response
+        # analysis = json.loads(completion.choices[0].message.function_call.arguments)
+        try:
+            text = response.text.split("```json")[1].split("```")[0]
+            analysis = json.loads(text)
+        except Exception as e: 
+            print(response.text)
+            print(e)
+        
+        return analysis
+
+class ClaudeAnalyzer:
+    SCHEMA = {
+        "type": "object",
+        "properties": {
+            "rating": {
+                "type": "string",
+                "description": "Bias rating, where -10 is leaning left and 10 is leaning right.",
+                "enum": [
+                    "-10",
+                    "-9",
+                    "-8",
+                    "-7",
+                    "-6",
+                    "-5",
+                    "-4",
+                    "-3",
+                    "-2",
+                    "-1",
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                ],
+            },
+            "reasons": {
+                "type": "array",
+                "description": "Reasons for the given ranking",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Short summary or title of the reason",
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "Detailed explanation or description of the reason",
+                        },
+                    },
+                    "required": ["reason", "explanation"],
+                },
+            },
+            "fallacies": {
+                "type": "array",
+                "description": "List of fallacies or biases in the article",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "bias": {
+                            "type": "string",
+                            "description": "Name of the fallacy or bias",
+                        },
+                        "explanation": {
+                            "type": "string",
+                            "description": "Description or explanation of the fallacy or bias",
+                        },
+                    },
+                    "required": ["bias", "explanation"],
+                },
+            },
+            "summary": {
+                "type": "string",
+                "description": "Brief summary of the article",
+            },
+        },
+        "required": ["ranking", "reasons", "fallacies", "summary"],
+    }
+
+    @staticmethod
+    def analyze_article(text):
+        client = Anthropic(
+            api_key=os.environ.get("CLAUDE_API_KEY"),
+        )
+
+        prompt = """
+Please generate a long summary and analysis of the text below:
+%s
+                                          
+Use the schema provided below and make sure to respond in correct JSON syntax. Give longer, more detailed responses that give insights into the text. Keep the summary at 4-6 sentences in one paragraph and make each topic/subject mentioned in the schema 1-2 sentences in description. Also, do not leave any fields empty - try to find at least 2 instances of each subject specified in the schema.
+Make sure to use single quotes or escape double quotes using the backslash escape character when quoting the article in your json response.
+%s""" % (text, json.dumps(ClaudeAnalyzer.SCHEMA))
+
+        # Call the Gemini API
+        response = client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=1024,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+        )
+        
+        try:
+            analysis = json.loads(response.content[0].text)
+        except Exception as e:
+            print(response.content[0].text)
+            print(e)
+        
+        return analysis
 
 if __name__ == "__main__":
     url = "https://www.foxnews.com/politics/house-passes-1-year-africa-aids-relief-extension-with-safeguard-gop-rep-says-stops-biden-abortion-hijacking"
@@ -141,5 +351,5 @@ if __name__ == "__main__":
     article.download()
     article.parse()
 
-    result = GPTAnalyzer.analyze_article(article.text)
+    result = ClaudeAnalyzer.analyze_article(article.text)
     print(result)
